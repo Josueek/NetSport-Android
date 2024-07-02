@@ -4,7 +4,8 @@ import { ImageBackground, StyleSheet } from 'react-native';
 const BackgroundImage = ({ children, background }) => {
   const backgrounds = {
     Splash: require('../../assets/Fondos/SplashScreen.png'),
-   
+    Registro: require('../../assets/Fondos/RegistroScreeen.png'),
+    Login: require('../../assets/Fondos/LoginScreen.png'),
   };
 
   return (

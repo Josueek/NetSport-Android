@@ -20,7 +20,7 @@ export default function SplashScreen() {
     useEffect(() => {
         if (counter === 0) {
             // Navega a la pantalla de inicio de sesión cuando el contador llega a cero
-            navigation.navigate('Login');
+            navigation.navigate('BienvenidaScreen');
         }
     }, [counter]); // Efecto se ejecuta cada vez que cambia el valor del contador
 
