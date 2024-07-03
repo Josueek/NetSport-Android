@@ -9,7 +9,6 @@ import { useNavigation } from '@react-navigation/native';
 import { registerClient } from '../../api/api'; // Asegúrate de importar la función
 
 export default function Login() {
-    
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [dui, setDui] = useState('');
@@ -23,16 +22,22 @@ export default function Login() {
 
     const handleRegister = async () => {
         try {
+            // Validación básica de campos requeridos
+            if (!nombre || !apellido || !dui || !fechaNacimiento || !telefono || !direccion || !correo || !contrasena) {
+                Alert.alert('Campos Incompletos', 'Por favor completa todos los campos.');
+                return;
+            }
+
             // Preparar los datos del cliente
             const clientData = {
-                nombre: nombre,
-                apellido: apellido,
-                dui: dui,
-                telefono: telefono,
-                correo: correo,
-                contrasena: contrasena,
+                nombre,
+                apellido,
+                dui,
+                telefono,
+                correo,
+                contrasena,
                 fecha_nacimiento: fechaNacimiento,
-                direccion: direccion,
+                direccion,
                 terminos_condiciones: true, // Ajusta según tus necesidades
             };
 
@@ -40,7 +45,7 @@ export default function Login() {
             const response = await registerClient(clientData);
 
             if (response.success) {
-                Alert.alert('Registro exitoso', '¡Te has registrado con éxito!', [
+                Alert.alert('Registro Exitoso', '¡Te has registrado con éxito!', [
                     { text: 'OK', onPress: () => navigation.navigate('LoginScreen') }
                 ]);
             } else {
@@ -52,7 +57,6 @@ export default function Login() {
         }
     };
 
-
     const volver = () => {
         navigation.navigate('BienvenidaScreen');
     };
@@ -61,7 +65,7 @@ export default function Login() {
         <BackgroundImage background={"Registro"}>
             <View style={styles.container}>
                 <Text style={styles.title}>
-                    ¡Registrate en NetSport!
+                    ¡Regístrate en NetSport!
                 </Text>
 
                 <View style={styles.row}>
@@ -94,7 +98,7 @@ export default function Login() {
                     <View style={styles.column}>
                         <Text>Fecha de nacimiento: </Text>
                         <InputText
-                            placeHolder={"00 de mes año"}
+                            placeHolder={"DD/MM/AAAA"}
                             value={fechaNacimiento}
                             setTextChange={setFechaNacimiento}
                         />
@@ -104,7 +108,7 @@ export default function Login() {
                     <View style={styles.column}>
                         <Text>Número de teléfono: </Text>
                         <InputText
-                            placeHolder={"8 dígitos"}
+                            placeHolder={"Número de teléfono"}
                             value={telefono}
                             setTextChange={setTelefono}
                         />
@@ -122,7 +126,7 @@ export default function Login() {
                     <View style={styles.column}>
                         <Text>Correo electrónico: </Text>
                         <InputText
-                            placeHolder={"@gmail.com"}
+                            placeHolder={"Correo electrónico"}
                             value={correo}
                             setTextChange={setCorreo}
                         />
@@ -130,7 +134,7 @@ export default function Login() {
                     <View style={styles.column}>
                         <Text>Contraseña: </Text>
                         <InputText
-                            placeHolder={"8 dígitos"}
+                            placeHolder={"Contraseña"}
                             value={contrasena}
                             setTextChange={setContrasena}
                             secureTextEntry={true}
@@ -183,4 +187,4 @@ const styles = StyleSheet.create({
     },
 });
 
-
+ 

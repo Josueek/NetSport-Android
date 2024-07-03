@@ -6,6 +6,7 @@ const BackgroundImage = ({ children, background }) => {
     Splash: require('../../assets/Fondos/SplashScreen.png'),
     Registro: require('../../assets/Fondos/RegistroScreeen.png'),
     Login: require('../../assets/Fondos/LoginScreen.png'),
+    General: require('../../assets/Fondos/FondoGeneral.png'),
   };
 
   return (

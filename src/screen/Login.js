@@ -12,7 +12,7 @@ export default function Login() {
   //Navegabilidad
   const navigation = useNavigation();
   const IniciarSesion = () => {
-    navigation.navigate('LoginScreen');
+    navigation.navigate('TabNavigator');
   }
 
   return (
@@ -36,6 +36,7 @@ export default function Login() {
         <View style={styles.button}>
           <Buttons color={"Naranja"}
             textoBoton={"Iniciar sesión"}
+            accionBoton={IniciarSesion}
           />
         </View>
       </View>
