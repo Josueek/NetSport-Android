@@ -1,61 +1,107 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-//Componentes
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+// Componentes
 import BackgroundImage from '../components/BackgroundImage';
 import InputLarge from '../components/inputs/InputLarge';
 import Buttons from '../components/buttons/Buttons';
-//Navegabilidad
+// Navegabilidad
 import { useNavigation } from '@react-navigation/native';
+// API
+import { loginClient } from '../../api/login';
+// Guardar el id del cliente iniciado
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
-  const [clave, setClave] = useState('');
-  //Navegabilidad
-  const navigation = useNavigation();
-  const IniciarSesion = () => {
-    navigation.navigate('TabNavigator');
-  }
+    const [correo, setCorreo] = useState('Josuekk@gmail.com');
+    const [clave, setClave] = useState('12345');
+    const navigation = useNavigation();
 
-  return (
-    <BackgroundImage background={"Login"}>
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    };
 
-      <View style={styles.container}>
-        <Text style={styles.title}>!Bienvenido¡</Text>
-        <InputLarge
-          placeHolder={"Ingresa tu correo electrónico"} />
-        <InputLarge
-          placeHolder={"Ingresa una clavev"}
-          contra={true}
-          valor={clave}
-          setTextChange={setClave} />
+    const IniciarSesion = async () => {
+        console.log('Botón presionado');
+        try {
+            if (!correo || !clave) {
+                Alert.alert('Campos Incompletos', 'Por favor completa todos los campos.');
+                return;
+            }
 
-        <TouchableOpacity>
-          <Text>¿Olvidaste tu contraseña?</Text>
-        </TouchableOpacity>
+            if (!validateEmail(correo)) {
+                Alert.alert('Correo inválido', 'Por favor ingresa un correo electrónico válido.');
+                return;
+            }
 
+            const loginData = { correo, contrasena: clave };
 
-        <View style={styles.button}>
-          <Buttons color={"Naranja"}
-            textoBoton={"Iniciar sesión"}
-            accionBoton={IniciarSesion}
-          />
-        </View>
-      </View>
+            console.log('Datos del usuario: ', loginData);
 
-    </BackgroundImage>
-  );
+            const response = await loginClient(loginData);
+
+            if (response.success) {
+                // Verificar que user_id está presente en la respuesta
+                if (response.user_id) {
+                    // Guardar el user_id en AsyncStorage
+                    await AsyncStorage.setItem('user_id', response.user_id.toString());
+                    Alert.alert('¡Bienvenido!', '¡Haz iniciado sesión con éxito!', [
+                        { text: 'OK', onPress: () => navigation.navigate('TabNavigator') }
+                    ]);
+                } else {
+                    Alert.alert('Error', 'No se pudo obtener el ID del usuario. Por favor, inténtalo de nuevo.');
+                }
+            } else if (response.message === 'La cuenta está inactiva.') {
+                Alert.alert('Cuenta inactiva', 'Tu cuenta está inactiva. Por favor contacta al soporte.');
+            } else {
+                Alert.alert('Error', response.message || 'Error al iniciar sesión');
+            }
+        } catch (error) {
+            console.error('Error inicio de sesión:', error);
+            Alert.alert('Error', 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
+        }
+    };
+
+    return (
+        <BackgroundImage background={"Login"}>
+            <View style={styles.container}>
+                <Text style={styles.title}>¡Bienvenido!</Text>
+                <InputLarge
+                    placeHolder={"Ingresa tu correo electrónico"}
+                    valor={correo}
+                    setTextChange={setCorreo} />
+                <InputLarge
+                    placeHolder={"Ingresa una clave"}
+                    contra={true}
+                    valor={clave}
+                    setTextChange={setClave} />
+                <TouchableOpacity>
+                    <Text>¿Olvidaste tu contraseña?</Text>
+                </TouchableOpacity>
+                <View style={styles.button}>
+                    <Buttons color={"Naranja"}
+                        textoBoton={"Iniciar sesión"}
+                        accionBoton={IniciarSesion}
+                    />
+                </View>
+            </View>
+        </BackgroundImage>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }, title: {
-    color: '#F5853F',
-    fontWeight: '800',
-    fontSize: 30,
-    marginBottom: 52
-  }, button: {
-    marginTop: 30,
-  }
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+        color: '#F5853F',
+        fontWeight: '800',
+        fontSize: 30,
+        marginBottom: 52
+    },
+    button: {
+        marginTop: 30,
+    }
 });

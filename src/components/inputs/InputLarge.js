@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: '300',
     width: 250,
-    borderRadius: 10,
+    borderRadius: 20,
     borderColor: '#000',
     height: 45,  // Ajustar la altura
     padding: 10,  // Ajustar el padding

@@ -1,14 +1,12 @@
-// Login.js
-
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import BackgroundImage from '../components/BackgroundImage';
 import InputText from '../components/inputs/InputText';
 import Buttons from '../components/buttons/Buttons';
 import { useNavigation } from '@react-navigation/native';
-import { registerClient } from '../../api/api'; // Asegúrate de importar la función
+import { registerClient } from '../../api/api';
 
-export default function Login() {
+export default function RegistroScreen() {
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [dui, setDui] = useState('');
@@ -21,14 +19,13 @@ export default function Login() {
     const navigation = useNavigation();
 
     const handleRegister = async () => {
+        console.log('Pressed register button');
         try {
-            // Validación básica de campos requeridos
             if (!nombre || !apellido || !dui || !fechaNacimiento || !telefono || !direccion || !correo || !contrasena) {
                 Alert.alert('Campos Incompletos', 'Por favor completa todos los campos.');
                 return;
             }
-
-            // Preparar los datos del cliente
+    
             const clientData = {
                 nombre,
                 apellido,
@@ -38,12 +35,14 @@ export default function Login() {
                 contrasena,
                 fecha_nacimiento: fechaNacimiento,
                 direccion,
-                terminos_condiciones: true, // Ajusta según tus necesidades
             };
-
-            // Llamar a la función de registro
+    
+            console.log('Client data to send:', clientData);
+    
             const response = await registerClient(clientData);
-
+    
+            console.log('Response from registerClient:', response);
+    
             if (response.success) {
                 Alert.alert('Registro Exitoso', '¡Te has registrado con éxito!', [
                     { text: 'OK', onPress: () => navigation.navigate('LoginScreen') }
@@ -56,6 +55,7 @@ export default function Login() {
             Alert.alert('Error', 'Hubo un problema al intentar registrar. Por favor, inténtalo de nuevo más tarde.');
         }
     };
+    
 
     const volver = () => {
         navigation.navigate('BienvenidaScreen');
@@ -64,97 +64,53 @@ export default function Login() {
     return (
         <BackgroundImage background={"Registro"}>
             <View style={styles.container}>
-                <Text style={styles.title}>
-                    ¡Regístrate en NetSport!
-                </Text>
-
+                <Text style={styles.title}>¡Regístrate en NetSport!</Text>
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <Text>Nombre: </Text>
-                        <InputText
-                            placeHolder={"Ingresa tu nombre"}
-                            value={nombre}
-                            setTextChange={setNombre}
-                        />
+                        <InputText placeHolder={"Ingresa tu nombre"} value={nombre} setTextChange={setNombre} />
                     </View>
                     <View style={styles.column}>
                         <Text>Apellido: </Text>
-                        <InputText
-                            placeHolder={"Ingresa tu apellido"}
-                            value={apellido}
-                            setTextChange={setApellido}
-                        />
+                        <InputText placeHolder={"Ingresa tu apellido"} value={apellido} setTextChange={setApellido} />
                     </View>
                 </View>
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <Text>Número de DUI: </Text>
-                        <InputText
-                            placeHolder={"DUI sin Guión"}
-                            value={dui}
-                            setTextChange={setDui}
-                        />
+                        <InputText placeHolder={"DUI sin Guión"} value={dui} setTextChange={setDui} />
                     </View>
                     <View style={styles.column}>
                         <Text>Fecha de nacimiento: </Text>
-                        <InputText
-                            placeHolder={"DD/MM/AAAA"}
-                            value={fechaNacimiento}
-                            setTextChange={setFechaNacimiento}
-                        />
+                        <InputText placeHolder={"DD/MM/AAAA"} value={fechaNacimiento} setTextChange={setFechaNacimiento} />
                     </View>
                 </View>
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <Text>Número de teléfono: </Text>
-                        <InputText
-                            placeHolder={"Número de teléfono"}
-                            value={telefono}
-                            setTextChange={setTelefono}
-                        />
+                        <InputText placeHolder={"Número de teléfono"} value={telefono} setTextChange={setTelefono} />
                     </View>
                     <View style={styles.column}>
                         <Text>Dirección de entrega: </Text>
-                        <InputText
-                            placeHolder={"Ingresa tu dirección"}
-                            value={direccion}
-                            setTextChange={setDireccion}
-                        />
+                        <InputText placeHolder={"Ingresa tu dirección"} value={direccion} setTextChange={setDireccion} />
                     </View>
                 </View>
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <Text>Correo electrónico: </Text>
-                        <InputText
-                            placeHolder={"Correo electrónico"}
-                            value={correo}
-                            setTextChange={setCorreo}
-                        />
+                        <InputText placeHolder={"Correo electrónico"} value={correo} setTextChange={setCorreo} />
                     </View>
                     <View style={styles.column}>
                         <Text>Contraseña: </Text>
-                        <InputText
-                            placeHolder={"Contraseña"}
-                            value={contrasena}
-                            setTextChange={setContrasena}
-                            secureTextEntry={true}
-                        />
+                        <InputText placeHolder={"Contraseña"} value={contrasena} setTextChange={setContrasena} secureTextEntry />
                     </View>
                 </View>
                 <View style={styles.row}>
                     <View style={styles.column}>
-                        <Buttons
-                            color={"Gris"}
-                            textoBoton={"Volver"}
-                            accionBoton={volver}
-                        />
+                        <Buttons color={"Gris"} textoBoton={"Volver"} accionBoton={volver} />
                     </View>
                     <View style={styles.column}>
-                        <Buttons
-                            color={"Naranja"}
-                            textoBoton={"Registrarme"}
-                            accionBoton={handleRegister}
-                        />
+                        <Buttons color={"Naranja"} textoBoton={"Registrarme"} accionBoton={handleRegister} />
                     </View>
                 </View>
             </View>
@@ -186,5 +142,3 @@ const styles = StyleSheet.create({
         marginBottom: 0,
     },
 });
-
- 
