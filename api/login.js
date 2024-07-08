@@ -1,6 +1,6 @@
 // API para verificar los datos del login
 export const loginClient = async (loginData) => {
-    const url = 'http://10.10.2.144/NetSports/api/services/public/login_cliente.php';
+    const url = 'http://192.168.1.94/NetSports/api/services/public/login_cliente.php';
 
     try {
         console.log('Sending request to:', url);
@@ -25,7 +25,36 @@ export const loginClient = async (loginData) => {
 
 // API para capturar datos del usuario iniciado
 export const PerfilClient = async (dataClient) => {
-    const url = 'http://10.10.2.144/NetSports/api/services/public/datos_usuario.php';
+    const url = 'http://192.168.1.94/NetSports/api/services/public/datos_usuario.php';
+
+    try {
+        console.log('Sending request to:', url);
+        console.log('Client data:', dataClient);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(dataClient).toString(),
+        });
+
+        const textResponse = await response.text();
+        console.log('Raw server response:', textResponse);
+
+        const jsonResponse = JSON.parse(textResponse);
+        console.log('Parsed server response:', jsonResponse);
+        return jsonResponse;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };
+    }
+};
+
+
+// API para guardar cambios en el perfil
+export const EditarClient = async (dataClient) => {
+    const url = 'http://192.168.1.94/NetSports/api/services/public/actualizar_perfil_cliente.php';
 
     try {
         console.log('Sending request to:', url);
@@ -47,3 +76,6 @@ export const PerfilClient = async (dataClient) => {
         return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };
     }
 };
+
+
+//API para cerrar sesion

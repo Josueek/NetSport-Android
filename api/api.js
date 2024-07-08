@@ -1,5 +1,5 @@
 const registerClient = async (clientData) => {
-  const url = 'http://10.10.2.144/NetSports/api/services/public/registro_condiciones.php';
+  const url = 'http://192.168.1.94/NetSports/api/services/public/registro_condiciones.php';
 
   try {
       console.log('Sending request to:', url);

@@ -12,9 +12,15 @@ import { loginClient } from '../../api/login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
-    const [correo, setCorreo] = useState('Josuekk@gmail.com');
-    const [clave, setClave] = useState('12345');
+    const [correo, setCorreo] = useState('');
+    const [clave, setClave] = useState('');
     const navigation = useNavigation();
+
+    //Limpiamos los campos luego de realizar una accion
+    const LimpiarCampos = () => {
+        setCorreo('');
+        setClave('');
+    }
 
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,9 +54,13 @@ export default function Login() {
                     Alert.alert('¡Bienvenido!', '¡Haz iniciado sesión con éxito!', [
                         { text: 'OK', onPress: () => navigation.navigate('TabNavigator') }
                     ]);
+
                 } else {
                     Alert.alert('Error', 'No se pudo obtener el ID del usuario. Por favor, inténtalo de nuevo.');
                 }
+                //Limpiamos los campos
+                LimpiarCampos();
+
             } else if (response.message === 'La cuenta está inactiva.') {
                 Alert.alert('Cuenta inactiva', 'Tu cuenta está inactiva. Por favor contacta al soporte.');
             } else {
@@ -61,6 +71,8 @@ export default function Login() {
             Alert.alert('Error', 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
         }
     };
+
+
 
     return (
         <BackgroundImage background={"Login"}>
