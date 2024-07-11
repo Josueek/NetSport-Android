@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
 //Componentes
 import BackgroundImage from '../../components/BackgroundImage';
 
+//Exportando la funciones 
 
 export default function Productos() { 
    
