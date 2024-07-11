@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { loginClient } from '../../api/login';
 // Guardar el id del cliente iniciado
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+ 
 export default function Login() {
     const [correo, setCorreo] = useState('');
     const [clave, setClave] = useState('');

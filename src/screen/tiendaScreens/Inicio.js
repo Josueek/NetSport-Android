@@ -10,8 +10,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // API para capturar los datos de productos
 import { cargarProductos } from '../../../api/producto';
+//IP constantes
+import * as Constantes from '../../utils/constantes';
+
 
 export default function Inicio() {
+    //IP
+    const ip = Constantes.IP;
+    //Productos
     const [productos, setProductos] = useState([]);
     // Productos favoritos
     const [favoritos, setFavoritos] = useState({});
@@ -66,12 +72,12 @@ export default function Inicio() {
     };
 
     //Cargar los detalles del producto acorde al producto seleccionado
-    
+
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.cardButton}>
             <View style={styles.card}>
-                <Image source={{ uri: 'http://10.10.2.144/NetSports/Api/images/productos' + item.imagen_portada }} style={styles.imagen} />
+                <Image source={{ uri: `${ip}//NetSports/Api/images/productos` + item.imagen_portada }} style={styles.imagen} />
                 <Text style={styles.nombre}>{item.nombre_producto}</Text>
                 <Text style={styles.categoria}>{item.nombre_categoria}</Text>
                 <View style={styles.row}>

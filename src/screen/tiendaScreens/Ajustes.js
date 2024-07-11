@@ -11,8 +11,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PerfilClient, EditarClient } from '../../../api/login';
 // Navegabilidad
 import { useNavigation } from '@react-navigation/native';
+//IP constantes
+import * as Constante from '../../utils/constantes';
 
 export default function UserDetails() {
+    //Valor de la IP
+    const ip = Constante.IP;
     // Variables para almacenar los datos de los inputs
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
@@ -90,7 +94,7 @@ export default function UserDetails() {
     //Funcion para cerrar sesión
     const cerrarSesion = async () => {
         try {
-            const response = await fetch('http://10.10.2.144/NetSports/Api/models/data/cerrar_sesion.php', {
+            const response = await fetch(`${ip}/NetSports/Api/models/data/cerrar_sesion.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
