@@ -1,6 +1,10 @@
+//Archivo que maneja IP
+import * as Constantes from '../src/utils/constantes';
+const ip = Constantes.IP;
+
 // API para verificar los datos del login
 export const cargarProductos = async () => {
-    const url = 'http://192.168.1.94/NetSports/api/services/public/productos_cliente.php';
+    const url = `${ip}/NetSports/api/services/public/productos_cliente.php`;
     try {
         console.log('Sending request to:', url);
         const response = await fetch(url, {

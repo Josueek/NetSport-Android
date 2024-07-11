@@ -1,6 +1,11 @@
+
+//Archivo que maneja IP
+import * as Constantes from '../src/utils/constantes';
+const ip = Constantes.IP;
+
 // API para verificar los datos del login
 export const loginClient = async (loginData) => {
-    const url = 'http://192.168.1.94/NetSports/api/services/public/login_cliente.php';
+    const url = `${ip}/NetSports/api/services/public/login_cliente.php`;
 
     try {
         console.log('Sending request to:', url);
@@ -25,7 +30,7 @@ export const loginClient = async (loginData) => {
 
 // API para capturar datos del usuario iniciado
 export const PerfilClient = async (dataClient) => {
-    const url = 'http://192.168.1.94/NetSports/api/services/public/datos_usuario.php';
+    const url = `${ip}/NetSports/api/services/public/datos_usuario.php`;
 
     try {
         console.log('Sending request to:', url);
@@ -54,7 +59,7 @@ export const PerfilClient = async (dataClient) => {
 
 // API para guardar cambios en el perfil
 export const EditarClient = async (dataClient) => {
-    const url = 'http://192.168.1.94/NetSports/api/services/public/actualizar_perfil_cliente.php';
+    const url = `${ip}/NetSports/api/services/public/actualizar_perfil_cliente.php`;
 
     try {
         console.log('Sending request to:', url);

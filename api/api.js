@@ -1,5 +1,9 @@
+//Archivo que maneja IP
+import * as Constantes from '../src/utils/constantes';
+const ip = Constantes.IP;
+
 const registerClient = async (clientData) => {
-  const url = 'http://192.168.1.94/NetSports/api/services/public/registro_condiciones.php';
+  const url = `${ip}/NetSports/api/services/public/registro_condiciones.php`;
 
   try {
       console.log('Sending request to:', url);

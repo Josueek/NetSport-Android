@@ -90,7 +90,7 @@ export default function UserDetails() {
     //Funcion para cerrar sesión
     const cerrarSesion = async () => {
         try {
-            const response = await fetch('http://192.168.1.94/NetSports/Api/models/data/cerrar_sesion.php', {
+            const response = await fetch('http://10.10.2.144/NetSports/Api/models/data/cerrar_sesion.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

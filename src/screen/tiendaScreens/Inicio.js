@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
 // Componentes
 import BackgroundImage from '../../components/BackgroundImage';
 // Librería de iconos
 import Icon from 'react-native-vector-icons/Ionicons';
 
-//Libreria para almacenar los productos marcados como favoritos
+// Libreria para almacenar los productos marcados como favoritos
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // API para capturar los datos de productos
@@ -13,28 +13,40 @@ import { cargarProductos } from '../../../api/producto';
 
 export default function Inicio() {
     const [productos, setProductos] = useState([]);
-    //Productos favoritos
+    // Productos favoritos
     const [favoritos, setFavoritos] = useState({});
+    const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        const fetchProductos = async () => {
-            const result = await cargarProductos();
-            if (result.products) {
-                setProductos(result.products);
-                //Cargar favoritos desde la libreria de almacenamiento
-                const storedFavoritos = await AsyncStorage.getItem('favoritos');
-                if (storedFavoritos) {
-                    setFavoritos(JSON.parse(storedFavoritos));
-                }
-            } else {
-                console.error(result.message);
+    const fetchProductos = useCallback(async () => {
+        const result = await cargarProductos();
+        if (result.products) {
+            setProductos(result.products);
+            // Cargar favoritos desde la libreria de almacenamiento
+            const storedFavoritos = await AsyncStorage.getItem('favoritos');
+            if (storedFavoritos) {
+                setFavoritos(JSON.parse(storedFavoritos));
             }
-        };
-
-        fetchProductos();
+        } else {
+            console.error(result.message);
+        }
     }, []);
 
-    //Funcion para identicar los productos favoritos
+    useEffect(() => {
+        fetchProductos();
+
+        const intervalId = setInterval(() => {
+            fetchProductos();
+        }, 60000); // Actualiza los datos cada 60 segundos
+
+        return () => clearInterval(intervalId); // Limpiar el intervalo al desmontar el componente
+    }, [fetchProductos]);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchProductos();
+        setRefreshing(false);
+    };
+
     const toggleFavorito = async (id_producto) => {
         const newFavoritos = {
             ...favoritos,
@@ -43,7 +55,7 @@ export default function Inicio() {
         setFavoritos(newFavoritos);
         // Guardar favoritos en AsyncStorage
         await AsyncStorage.setItem('favoritos', JSON.stringify(newFavoritos));
-        //Actualizar la lista de productos
+        // Actualizar la lista de productos
         setProductos(prevProductos =>
             prevProductos.map(productos =>
                 productos.id_producto === id_producto
@@ -53,11 +65,13 @@ export default function Inicio() {
         );
     };
 
-    // Renderizar cada producto como una carta
+    //Cargar los detalles del producto acorde al producto seleccionado
+    
+
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.cardButton}>
             <View style={styles.card}>
-                <Image source={{ uri: 'http://192.168.1.94/NetSports/Api/images/productos' + item.imagen_portada }} style={styles.imagen} />
+                <Image source={{ uri: 'http://10.10.2.144/NetSports/Api/images/productos' + item.imagen_portada }} style={styles.imagen} />
                 <Text style={styles.nombre}>{item.nombre_producto}</Text>
                 <Text style={styles.categoria}>{item.nombre_categoria}</Text>
                 <View style={styles.row}>
@@ -73,7 +87,7 @@ export default function Inicio() {
             </View>
         </TouchableOpacity>
     );
-    
+
     return (
         <BackgroundImage background={"General"}>
             <View style={styles.container}>
@@ -84,6 +98,8 @@ export default function Inicio() {
                     keyExtractor={item => item.id_producto.toString()}
                     numColumns={2} // Configura FlatList para que tenga dos columnas
                     columnWrapperStyle={styles.row} // Asegura que las columnas tengan espacio entre ellas
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
                 />
             </View>
         </BackgroundImage>
@@ -153,4 +169,3 @@ const styles = StyleSheet.create({
         padding: 10,
     },
 });
-

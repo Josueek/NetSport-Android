@@ -12,26 +12,36 @@ import { cargarProductos } from '../../../api/producto';
 export default function Favoritos() {
     const [favoritos, setFavoritos] = useState({});
     const [productos, setProductos] = useState([]);
+    //Const para refrescar los datos
+    const [refreshing, setRefreshing] = useState(false);
 
     // Capturamos los productos
     useEffect(() => {
-        const fetchFavoritos = async () => {
-            const storedFavoritos = await AsyncStorage.getItem('favoritos');
-            if (storedFavoritos) {
-                const favoritosIds = Object.keys(JSON.parse(storedFavoritos)).filter(id => JSON.parse(storedFavoritos)[id]);
-                setFavoritos(JSON.parse(storedFavoritos));
-                const result = await cargarProductos();
-                if (result.products) {
-                    const favoritosProductos = result.products.filter(producto => favoritosIds.includes(producto.id_producto.toString()));
-                    setProductos(favoritosProductos);
-                } else {
-                    console.error(result.message);
-                }
-            }
-        };
 
         fetchFavoritos();
     }, []);
+
+    const fetchFavoritos = async () => {
+        const storedFavoritos = await AsyncStorage.getItem('favoritos');
+        if (storedFavoritos) {
+            const favoritosIds = Object.keys(JSON.parse(storedFavoritos)).filter(id => JSON.parse(storedFavoritos)[id]);
+            setFavoritos(JSON.parse(storedFavoritos));
+            const result = await cargarProductos();
+            if (result.products) {
+                const favoritosProductos = result.products.filter(producto => favoritosIds.includes(producto.id_producto.toString()));
+                setProductos(favoritosProductos);
+            } else {
+                console.error(result.message);
+            }
+        }
+    };
+
+    //ACtualizamos los datos
+    const onRefresh = async() =>{
+        setRefreshing(true);
+        await fetchFavoritos();
+        setRefreshing(false);
+    }
 
     // Función para identificar los productos favoritos
     const toggleFavorito = async (id_producto) => {
@@ -59,7 +69,7 @@ export default function Favoritos() {
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.cardButton}>
             <View style={styles.card}>
-                <Image source={{ uri: 'http://192.168.1.94/NetSports/Api/images/productos' + item.imagen_portada }} style={styles.imagen} />
+                <Image source={{ uri: 'http://10.10.2.144/NetSports/Api/images/productos' + item.imagen_portada }} style={styles.imagen} />
                 <Text style={styles.nombre}>{item.nombre_producto}</Text>
                 <Text style={styles.categoria}>{item.nombre_categoria}</Text>
                 <View style={styles.row}>
@@ -86,7 +96,9 @@ export default function Favoritos() {
                     keyExtractor={item => item.id_producto.toString()}
                     numColumns={2} // Configura FlatList para que tenga dos columnas
                     columnWrapperStyle={styles.row} // Asegura que las columnas tengan espacio entre ellas
-                />
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+               />
             </View>
         </BackgroundImage>
     );
@@ -111,7 +123,7 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 3,
         alignItems: 'center',
-    }, 
+    },
     cardButton: {
         flex: 0,
     },
