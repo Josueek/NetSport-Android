@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     categoria: {
-        color: '#666',
+        color: '#665',
         fontSize: 14,
         marginBottom: 5,
         textAlign: 'center',

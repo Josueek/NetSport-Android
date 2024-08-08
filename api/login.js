@@ -1,5 +1,4 @@
-
-//Archivo que maneja IP
+// Archivo que maneja IP
 import * as Constantes from '../src/utils/constantes';
 const ip = Constantes.IP;
 
@@ -56,7 +55,6 @@ export const PerfilClient = async (dataClient) => {
     }
 };
 
-
 // API para guardar cambios en el perfil
 export const EditarClient = async (dataClient) => {
     const url = `${ip}/NetSports/api/services/public/actualizar_perfil_cliente.php`;
@@ -82,5 +80,4 @@ export const EditarClient = async (dataClient) => {
     }
 };
 
-
-//API para cerrar sesion
+// API para cerrar sesión

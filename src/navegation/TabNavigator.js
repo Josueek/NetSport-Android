@@ -5,6 +5,7 @@ import Inicio from '../screen/tiendaScreens/Inicio';
 import Productos from '../screen/tiendaScreens/Productos';
 import Favoritos from '../screen/tiendaScreens/Favoritos';
 import Ajustes from '../screen/tiendaScreens/Ajustes';
+import Carrito from '../screen/tiendaScreens/Carrito'; // Nueva pantalla de Carrito
 
 const Tab = createBottomTabNavigator();
 
@@ -14,11 +15,13 @@ const AdmincfpTabNavigator = () => {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-                    let iconSize = focused ? size + 5 : size; // Aumenta el tamaño del icono si está seleccionado
+                    let iconSize = focused ? size + 5 : size;
 
                     if (route.name === 'Inicio') {
                         iconName = 'home';
                     } else if (route.name === 'Productos') {
+                        iconName = 'grid';
+                    } else if (route.name === 'Carrito') {
                         iconName = 'cart';
                     } else if (route.name === 'Favoritos') {
                         iconName = 'heart';
@@ -33,7 +36,7 @@ const AdmincfpTabNavigator = () => {
                 tabBarInactiveTintColor: 'white',
                 tabBarLabelStyle: { fontWeight: 'bold' },
                 tabBarStyle: {
-                    backgroundColor: '#F5853F', // Cambia el color de fondo del tab
+                    backgroundColor: '#F5853F',
                 },
             })}
         >
@@ -44,8 +47,13 @@ const AdmincfpTabNavigator = () => {
             />
             <Tab.Screen
                 name="Productos"
-                component={Productos}
+                component={Productos} // Usar la pantalla Productos directamente
                 options={{ tabBarLabel: 'Productos' }}
+            />
+            <Tab.Screen
+                name="Carrito"
+                component={Carrito}
+                options={{ tabBarLabel: 'Carrito' }}
             />
             <Tab.Screen
                 name="Favoritos"
