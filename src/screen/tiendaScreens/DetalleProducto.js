@@ -61,10 +61,14 @@ const DetalleProducto = ({ route }) => {
             style={styles.container}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps='handled'>
+
                 <Image
-                    source={{ uri: `${Constantes.IP}/NetSports/Api/images/productos/${producto.imagen_portada}` }}
+                    source={{ uri: `${Constantes.IP}//NetSports/Api/images/productos${producto.imagen_portada}` }}
                     style={styles.imagen}
                 />
+
+
+
                 <Text style={styles.nombre}>{producto.nombre_producto}</Text>
                 <Text style={styles.descripcion}>{producto.descripcion_producto}</Text>
                 <Text style={styles.precio}>${producto.precio_final}</Text>
@@ -114,7 +118,7 @@ const DetalleProducto = ({ route }) => {
                     <Text style={styles.botonTexto}>Agregar al carrito</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.reseñasTitulo}>Reseñas</Text>
+                <Text style={styles.reseñasTitulo}>Valoraciones</Text>
                 {valoraciones.map((valoracion, index) => (
                     <View key={index} style={styles.valoracion}>
                         <View style={styles.estrellas}>
@@ -146,34 +150,38 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     imagen: {
-        width: '100%',
+        width: 300,
         height: 300,
         marginBottom: 16,
         resizeMode: 'cover',
+        alignSelf: 'center', // Centra solo la imagen
     },
     nombre: {
-        fontSize: 24,
+        alignSelf: 'center', // Centra solo la imagen
+        fontSize: 29,
         fontWeight: 'bold',
         marginBottom: 8,
     },
     descripcion: {
+        
+        alignSelf: 'center', // Centra solo la imagen
         fontSize: 16,
-        marginBottom: 16,
+        marginBottom: 10,
     },
     precio: {
-        fontSize: 20,
+        fontSize: 40,
         color: '#F5853F',
         fontWeight: 'bold',
+        alignSelf: 'center', // Centra solo la imagen
+    
         marginBottom: 16,
     },
     categoria: {
-        fontSize: 18,
-        color: '#665',
+        fontSize: 16,
         marginBottom: 8,
     },
     stock: {
-        fontSize: 18,
-        color: '#665',
+        fontSize: 16,
         marginBottom: 16,
     },
     pickerContainer: {
@@ -220,9 +228,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     reseñasTitulo: {
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 16,
+        alignSelf: 'center', // Centra solo la imagen
+        marginTop: 5,
+        marginBottom: 19,
     },
     valoracion: {
         marginBottom: 16,
