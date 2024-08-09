@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { obtenerDetalleProducto } from '../../../api/detalleProducto';
 import * as Constantes from '../../utils/constantes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const DetalleProducto = ({ route }) => {
@@ -30,22 +31,59 @@ const DetalleProducto = ({ route }) => {
         fetchProducto();
     }, [idProducto]);
 
-    const handleAgregarAlCarrito = () => {
+    const agregarAlCarrito = async () => {
+        // Verificar si el producto está disponible
+        if (!producto) {
+            Alert.alert('Error', 'El producto no está disponible.');
+            return;
+        }
+    
+        // Verificar si se seleccionó una talla y un color
         if (!tallaSeleccionada || !colorSeleccionado) {
-            setError('Por favor, seleccione talla y color.');
+            setError('Por favor, selecciona una talla y un color.');
             return;
         }
-
-        const cantidadNumero = parseInt(cantidad, 10);
-        if (cantidadNumero <= 0 || cantidadNumero > producto.existencia_producto) {
-            setError('Cantidad debe ser mayor a 0 y no superar el stock.');
+    
+        // Verificar la cantidad
+        const cantidadSeleccionada = parseInt(cantidad, 10);
+        if (isNaN(cantidadSeleccionada) || cantidadSeleccionada <= 0) {
+            setError('La cantidad debe ser un número positivo.');
             return;
         }
-
-        // Agregar lógica para agregar al carrito aquí
-        setError('');
-        console.log('Producto agregado al carrito');
+    
+        // Verificar disponibilidad de stock
+        if (producto.existencia_producto < cantidadSeleccionada) {
+            Alert.alert('Error', 'No hay suficiente stock disponible.');
+            return;
+        }
+    
+        try {
+            const carrito = await AsyncStorage.getItem('carrito');
+            const carritoItems = carrito ? JSON.parse(carrito) : [];
+    
+            const nuevoItem = {
+                id: producto.id_producto,
+                nombre: producto.nombre_producto,
+                precio: producto.precio_final,
+                cantidad: cantidadSeleccionada,
+                color: colorSeleccionado,
+                talla: tallaSeleccionada,
+                imagen: `${Constantes.IP}//NetSports/Api/images/productos${producto.imagen_portada}` // Agregar la ruta de la imagen
+            };
+    
+            carritoItems.push(nuevoItem);
+            await AsyncStorage.setItem('carrito', JSON.stringify(carritoItems));
+            
+            console.log('Carrito actualizado:', carritoItems); // Agrega esta línea para depuración
+            
+            Alert.alert('Éxito', 'Producto agregado correctamente al carrito');
+            setError(''); // Limpia el error si todo sale bien
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+            Alert.alert('Error', 'No se pudo agregar el producto al carrito.');
+        }
     };
+    
 
     if (loading) {
         return <View style={styles.container}><Text>Cargando...</Text></View>;
@@ -61,13 +99,10 @@ const DetalleProducto = ({ route }) => {
             style={styles.container}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps='handled'>
-
                 <Image
                     source={{ uri: `${Constantes.IP}//NetSports/Api/images/productos${producto.imagen_portada}` }}
                     style={styles.imagen}
                 />
-
-
 
                 <Text style={styles.nombre}>{producto.nombre_producto}</Text>
                 <Text style={styles.descripcion}>{producto.descripcion_producto}</Text>
@@ -83,6 +118,7 @@ const DetalleProducto = ({ route }) => {
                         style={styles.picker}
                     >
                         <Picker.Item label="Seleccionar talla" value="" />
+                        {/* Puedes agregar más tallas si es necesario */}
                         <Picker.Item label={producto.talla} value={producto.talla} />
                     </Picker>
                 </View>
@@ -95,6 +131,7 @@ const DetalleProducto = ({ route }) => {
                         style={styles.picker}
                     >
                         <Picker.Item label="Seleccionar color" value="" />
+                        {/* Puedes agregar más colores si es necesario */}
                         <Picker.Item label={producto.color} value={producto.color} />
                     </Picker>
                 </View>
@@ -114,7 +151,7 @@ const DetalleProducto = ({ route }) => {
 
                 {error ? <Text style={styles.error}>{error}</Text> : null}
 
-                <TouchableOpacity style={styles.botonAgregar} onPress={handleAgregarAlCarrito}>
+                <TouchableOpacity style={styles.botonAgregar} onPress={agregarAlCarrito}>
                     <Text style={styles.botonTexto}>Agregar al carrito</Text>
                 </TouchableOpacity>
 
@@ -157,14 +194,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center', // Centra solo la imagen
     },
     nombre: {
-        alignSelf: 'center', // Centra solo la imagen
+        alignSelf: 'center', // Centra solo el nombre
         fontSize: 29,
         fontWeight: 'bold',
         marginBottom: 8,
     },
     descripcion: {
-        
-        alignSelf: 'center', // Centra solo la imagen
+        alignSelf: 'center', // Centra solo la descripción
         fontSize: 16,
         marginBottom: 10,
     },
@@ -172,8 +208,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         color: '#F5853F',
         fontWeight: 'bold',
-        alignSelf: 'center', // Centra solo la imagen
-    
+        alignSelf: 'center', // Centra solo el precio
         marginBottom: 16,
     },
     categoria: {
@@ -211,8 +246,10 @@ const styles = StyleSheet.create({
         width: '100%',
         textAlign: 'center',
     },
+   
     error: {
         color: 'red',
+        fontSize: 16,
         marginBottom: 16,
     },
     botonAgregar: {
@@ -230,7 +267,7 @@ const styles = StyleSheet.create({
     reseñasTitulo: {
         fontSize: 30,
         fontWeight: 'bold',
-        alignSelf: 'center', // Centra solo la imagen
+        alignSelf: 'center', // Centra el título de reseñas
         marginTop: 5,
         marginBottom: 19,
     },

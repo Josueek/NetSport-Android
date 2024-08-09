@@ -15,7 +15,6 @@ export const cargarProductos = async () => {
            
         });
         const jsonResponse = await response.json();
-        console.log('Server response:', jsonResponse);
         return jsonResponse;
     } catch (error) {
         console.error('Error during fetching products:', error);

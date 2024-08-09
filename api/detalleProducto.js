@@ -18,7 +18,9 @@ export const obtenerDetalleProducto = async (idProducto) => {
             },
         });
         const jsonResponse = await response.json();
+        console.log('Respuesta de la API:', jsonResponse); // Agrega esta línea para verificar
         return jsonResponse;
+        
     } catch (error) {
         console.error('Error al obtener los detalles del producto:', error);
         return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };

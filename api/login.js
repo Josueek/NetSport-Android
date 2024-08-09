@@ -1,4 +1,4 @@
-// Archivo que maneja IP
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Constantes from '../src/utils/constantes';
 const ip = Constantes.IP;
 
@@ -7,9 +7,6 @@ export const loginClient = async (loginData) => {
     const url = `${ip}/NetSports/api/services/public/login_cliente.php`;
 
     try {
-        console.log('Sending request to:', url);
-        console.log('Client data:', loginData);
-
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -19,13 +16,19 @@ export const loginClient = async (loginData) => {
         });
 
         const jsonResponse = await response.json();
-        console.log('Server response:', jsonResponse);
+
+        if (jsonResponse.success && jsonResponse.userId) {
+            // Almacenar userId en AsyncStorage
+            await AsyncStorage.setItem('userId', jsonResponse.userId);
+        }
+
         return jsonResponse;
     } catch (error) {
         console.error('Error during login:', error);
         return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };
     }
 };
+
 
 // API para capturar datos del usuario iniciado
 export const PerfilClient = async (dataClient) => {
