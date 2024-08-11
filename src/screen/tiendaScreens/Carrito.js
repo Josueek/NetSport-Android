@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, Alert, TouchableOpacity, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons';
-import * as Constantes from '../../utils/constantes';
-import { procesarPedido } from '../../../api/procesarPedido'; // Asegúrate de que la ruta sea correcta
+import { procesarPedido } from '../../../api/procesarPedido';
+import * as Constantes from '../../../src/utils/constantes'; // Importar constantes para la IP
 
 const Carrito = ({ navigation }) => {
     const [carritoItems, setCarritoItems] = useState([]);
@@ -57,17 +57,41 @@ const Carrito = ({ navigation }) => {
     const fetchUserData = async () => {
         try {
             const user_id = await AsyncStorage.getItem('user_id');
-            const direccion = await AsyncStorage.getItem('direccion');
-
-            if (user_id && direccion) {
+            if (user_id) {
                 setUserId(user_id);
+                const direccion = await fetchUserAddress(user_id);
                 setDireccion(direccion);
             } else {
-                Alert.alert('Error', 'No se pudo obtener la información del usuario o la dirección.');
+                Alert.alert('Error', 'No se pudo obtener la información del usuario.');
             }
         } catch (error) {
             console.error('Error al obtener la información del usuario:', error);
             Alert.alert('Error', 'Hubo un problema al obtener la información del usuario.');
+        }
+    };
+
+    const fetchUserAddress = async (userId) => {
+        try {
+            const ip = Constantes.IP; // Obtener la IP del archivo de constantes
+            const url = `${ip}/NetSports/api/services/public/obtener_direccion.php?user_id=${userId}`;
+            const response = await fetch(url);
+
+            if (response.ok) {
+                const jsonResponse = await response.json();
+                if (jsonResponse.success) {
+                    return jsonResponse.direccion;
+                } else {
+                    Alert.alert('Error', jsonResponse.message);
+                    return '';
+                }
+            } else {
+                Alert.alert('Error', 'Error al comunicarse con el servidor.');
+                return '';
+            }
+        } catch (error) {
+            console.error('Error al obtener la dirección del usuario:', error);
+            Alert.alert('Error', 'Hubo un problema al obtener la dirección del usuario.');
+            return '';
         }
     };
 
@@ -83,7 +107,7 @@ const Carrito = ({ navigation }) => {
                         const carrito = await AsyncStorage.getItem('carrito');
                         if (carrito) {
                             const items = JSON.parse(carrito);
-                            const nuevoCarrito = items.filter(item => item.id !== itemId);
+                            const nuevoCarrito = items.filter(item => item.id && item.id !== itemId); // Verificar que el id no sea nulo
                             setCarritoItems(nuevoCarrito);
                             await AsyncStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
                         }
@@ -95,24 +119,16 @@ const Carrito = ({ navigation }) => {
     };
 
     const limpiarCarrito = async () => {
-        Alert.alert(
-            'Confirmación',
-            '¿Estás seguro que quieres limpiar el carrito?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                { 
-                    text: 'Limpiar', 
-                    onPress: async () => {
-                        await AsyncStorage.removeItem('carrito');
-                        setCarritoItems([]);
-                        setSubtotal(0);
-                        setEnvio(0);
-                        setTotal(0);
-                    }, 
-                    style: 'destructive' 
-                }
-            ]
-        );
+        try {
+            await AsyncStorage.removeItem('carrito');
+            setCarritoItems([]);
+            setSubtotal(0);
+            setEnvio(0);
+            setTotal(0);
+        } catch (error) {
+            console.error('Error al limpiar el carrito:', error);
+            Alert.alert('Error', 'Hubo un problema al limpiar el carrito.');
+        }
     };
 
     const generarNumeroPedido = () => {
@@ -122,24 +138,45 @@ const Carrito = ({ navigation }) => {
 
     const realizarPedido = async () => {
         try {
+            // Verificar si el carrito tiene productos
+            if (carritoItems.length === 0) {
+                Alert.alert('Carrito vacío', 'No se puede realizar un pedido con el carrito vacío.');
+                return;
+            }
+    
+            // Recuperar el userId
+            const userId = await AsyncStorage.getItem('user_id');
             if (!direccion || !userId) {
                 Alert.alert('Error', 'No se pudo obtener la información del usuario o la dirección.');
                 return;
             }
-
+    
             const numeroPedido = generarNumeroPedido();
             const pedidoData = {
-                carrito: carritoItems,
+                carrito: carritoItems.map(item => ({
+                    id_producto: item.id_producto, // Cambiar 'id' a 'id_producto'
+                    nombre: item.nombre,
+                    precio: item.precio,
+                    cantidad: item.cantidad,
+                    color: item.color,
+                    talla: item.talla,
+                    imagen: item.imagen,
+                    id_usuario: item.id_usuario // Esto se establece en el carrito, por lo que no es necesario aquí
+                })),
                 direccion: direccion,
                 numeroPedido: numeroPedido,
+                userId: userId,
             };
-
+    
+            console.log('Datos del pedido a enviar:', pedidoData); // Depuración
+    
             const response = await procesarPedido(pedidoData);
-
+    
+            console.log('Respuesta de la API:', response); // Depuración
+    
             if (response.success) {
-                Alert.alert('Éxito', response.message);
+                Alert.alert('Éxito', 'El pedido se ha realizado con éxito.');
                 limpiarCarrito(); // Limpiar carrito después de realizar el pedido
-                navigation.navigate('ConfirmarPedido'); // Navegar a la pantalla de confirmación
             } else {
                 Alert.alert('Error', response.message);
             }
@@ -148,9 +185,10 @@ const Carrito = ({ navigation }) => {
             Alert.alert('Error', 'Hubo un problema al procesar el pedido.');
         }
     };
-
+    
+    
     const renderItem = ({ item }) => {
-        if (!item || !item.nombre || !item.precio || !item.cantidad || !item.talla || !item.color) {
+        if (!item || !item.nombre || !item.precio || !item.cantidad || !item.talla || !item.color || !item.id_producto) {
             console.warn('Item del carrito no válido:', item);
             return null;
         }
@@ -168,7 +206,7 @@ const Carrito = ({ navigation }) => {
                     <Text style={styles.itemText}>Talla: {item.talla}</Text>
                     <Text style={styles.itemText}>Color: {item.color}</Text>
                 </View>
-                <TouchableOpacity onPress={() => eliminarProducto(item.id)} style={styles.deleteButton}>
+                <TouchableOpacity onPress={() => eliminarProducto(item.id_producto)} style={styles.deleteButton}>
                     <FontAwesome name="trash" size={24} color="red" />
                 </TouchableOpacity>
             </View>
@@ -178,7 +216,7 @@ const Carrito = ({ navigation }) => {
     return (
         <FlatList
             data={carritoItems}
-            keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+            keyExtractor={(item) => item.id_producto?.toString() || Math.random().toString()}
             renderItem={renderItem}
             contentContainerStyle={styles.listContainer}
             ListHeaderComponent={() => (
@@ -195,9 +233,6 @@ const Carrito = ({ navigation }) => {
                     <TouchableOpacity style={styles.pedidoButton} onPress={realizarPedido}>
                         <Text style={styles.pedidoButtonText}>Realizar Pedido</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={limpiarCarrito} style={styles.limpiarButton}>
-                        <Text style={styles.limpiarButtonText}>Limpiar Carrito</Text>
-                    </TouchableOpacity>
                 </View>
             )}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchCarrito} />}
@@ -206,99 +241,77 @@ const Carrito = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    headerContainer: {
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    carritoText: {
-        marginTop: 40,
-        fontSize: 34,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 10,
-    },
-    numeroPedidoText: {
-        fontSize: 26,
-        textAlign: 'center',
-        marginBottom: 20,
-    },
     listContainer: {
-        paddingBottom: 20,
+        padding: 10,
     },
     itemContainer: {
         flexDirection: 'row',
         marginBottom: 10,
-        padding: 16,
-        backgroundColor: '#f9f9f9',
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        paddingBottom: 10,
     },
     itemDetails: {
         flex: 1,
-    },
-    itemText: {
-        fontSize: 16,
+        marginLeft: 10,
     },
     imagen: {
         width: 100,
         height: 100,
-        marginRight: 16,
-        borderRadius: 5,
-        resizeMode: 'cover',
+        borderRadius: 8,
     },
-    imagenPlaceholder: {
-        width: 100,
-        height: 100,
-        marginRight: 16,
-        backgroundColor: '#ddd',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 5,
-    },
-    imagenPlaceholderText: {
-        fontSize: 12,
-        color: '#666',
+    itemText: {
+        fontSize: 16,
     },
     deleteButton: {
-        marginLeft: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+    },
+    headerContainer: {
+        padding: 10,
+        backgroundColor: '#f8f8f8',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
+    carritoText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    numeroPedidoText: {
+        fontSize: 18,
+        marginTop: 5,
     },
     summaryContainer: {
-        padding: 16,
-        backgroundColor: '#fff',
+        padding: 10,
+        backgroundColor: '#f8f8f8',
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
     },
     summaryText: {
         fontSize: 18,
-        marginBottom: 10,
+        marginBottom: 5,
     },
     pedidoButton: {
-        backgroundColor: '#28a745',
+        backgroundColor: '#007bff',
         padding: 10,
         borderRadius: 5,
-        alignItems: 'center',
+        marginBottom: 10,
     },
     pedidoButtonText: {
         color: '#fff',
+        textAlign: 'center',
         fontSize: 18,
-        fontWeight: 'bold',
     },
     limpiarButton: {
         backgroundColor: '#dc3545',
         padding: 10,
         borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 10,
     },
     limpiarButtonText: {
         color: '#fff',
+        textAlign: 'center',
         fontSize: 18,
-        fontWeight: 'bold',
     },
 });
 
