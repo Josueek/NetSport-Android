@@ -4,6 +4,8 @@ import SplashScreen from '../screen/SplashScreen';
 import BienvenidaScreen from '../screen/BienvenidaScreen';
 import RegistroScreen from '../screen/RegistroScreen';
 import LoginScreen from '../screen/Login';
+import Pedidos from '../screen/tiendaScreens/Pedidos'; // Importa la pantalla de pedidos
+
 import TabNavigator from './TabNavigator';
 import DetalleProducto from '../screen/tiendaScreens/DetalleProducto';
 
@@ -22,7 +24,7 @@ const NavStack = () => {
                 component={BienvenidaScreen}
                 options={{ headerShown: false }}
             />
-            <Stack.Screen 
+            <Stack.Screen
                 name="RegistroScreen"
                 component={RegistroScreen}
                 options={{ headerShown: false }}
@@ -37,10 +39,16 @@ const NavStack = () => {
                 component={TabNavigator}
                 options={{ headerShown: false }}
             />
-            <Stack.Screen 
-                name="DetalleProducto" 
-                component={DetalleProducto} 
-                options={{ title: 'Detalle del Producto' }} 
+            <Stack.Screen
+                name="DetalleProducto"
+                component={DetalleProducto}
+                options={{ title: 'Detalle del Producto' }}
+            />
+
+            <Stack.Screen
+                name="Pedidos"
+                component={Pedidos}
+                options={{ title: 'Mis Pedidos' }} // Añade la pantalla de pedidos
             />
         </Stack.Navigator>
     );

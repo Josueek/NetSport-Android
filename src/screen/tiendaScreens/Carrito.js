@@ -3,16 +3,20 @@ import { StyleSheet, Text, View, FlatList, Image, Alert, TouchableOpacity, Refre
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons';
 import * as Constantes from '../../utils/constantes';
+import { procesarPedido } from '../../../api/procesarPedido'; // Asegúrate de que la ruta sea correcta
 
 const Carrito = ({ navigation }) => {
     const [carritoItems, setCarritoItems] = useState([]);
     const [subtotal, setSubtotal] = useState(0);
     const [envio, setEnvio] = useState(0);
     const [total, setTotal] = useState(0);
+    const [direccion, setDireccion] = useState(''); // Estado para la dirección
+    const [userId, setUserId] = useState(''); // Estado para el ID del usuario
     const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         fetchCarrito();
+        fetchUserData(); // Obtener datos del usuario al cargar el componente
     }, []);
 
     const fetchCarrito = async () => {
@@ -47,6 +51,23 @@ const Carrito = ({ navigation }) => {
             Alert.alert('Error', 'No se pudo cargar el carrito.');
         } finally {
             setRefreshing(false);
+        }
+    };
+
+    const fetchUserData = async () => {
+        try {
+            const user_id = await AsyncStorage.getItem('user_id');
+            const direccion = await AsyncStorage.getItem('direccion');
+
+            if (user_id && direccion) {
+                setUserId(user_id);
+                setDireccion(direccion);
+            } else {
+                Alert.alert('Error', 'No se pudo obtener la información del usuario o la dirección.');
+            }
+        } catch (error) {
+            console.error('Error al obtener la información del usuario:', error);
+            Alert.alert('Error', 'Hubo un problema al obtener la información del usuario.');
         }
     };
 
@@ -99,6 +120,35 @@ const Carrito = ({ navigation }) => {
         return `ORD-${numeroPedido}`;
     };
 
+    const realizarPedido = async () => {
+        try {
+            if (!direccion || !userId) {
+                Alert.alert('Error', 'No se pudo obtener la información del usuario o la dirección.');
+                return;
+            }
+
+            const numeroPedido = generarNumeroPedido();
+            const pedidoData = {
+                carrito: carritoItems,
+                direccion: direccion,
+                numeroPedido: numeroPedido,
+            };
+
+            const response = await procesarPedido(pedidoData);
+
+            if (response.success) {
+                Alert.alert('Éxito', response.message);
+                limpiarCarrito(); // Limpiar carrito después de realizar el pedido
+                navigation.navigate('ConfirmarPedido'); // Navegar a la pantalla de confirmación
+            } else {
+                Alert.alert('Error', response.message);
+            }
+        } catch (error) {
+            console.error('Error al realizar el pedido:', error);
+            Alert.alert('Error', 'Hubo un problema al procesar el pedido.');
+        }
+    };
+
     const renderItem = ({ item }) => {
         if (!item || !item.nombre || !item.precio || !item.cantidad || !item.talla || !item.color) {
             console.warn('Item del carrito no válido:', item);
@@ -142,7 +192,7 @@ const Carrito = ({ navigation }) => {
                     <Text style={styles.summaryText}>Subtotal: ${subtotal.toFixed(2)}</Text>
                     <Text style={styles.summaryText}>Envío: ${envio.toFixed(2)}</Text>
                     <Text style={styles.summaryText}>Total: ${total.toFixed(2)}</Text>
-                    <TouchableOpacity style={styles.pedidoButton} onPress={() => navigation.navigate('ConfirmarPedido')}>
+                    <TouchableOpacity style={styles.pedidoButton} onPress={realizarPedido}>
                         <Text style={styles.pedidoButtonText}>Realizar Pedido</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={limpiarCarrito} style={styles.limpiarButton}>
@@ -221,36 +271,33 @@ const styles = StyleSheet.create({
     },
     summaryContainer: {
         padding: 16,
-        backgroundColor: '#f9f9f9',
-        borderTopWidth: 1,
-        borderTopColor: '#ccc',
+        backgroundColor: '#fff',
     },
     summaryText: {
         fontSize: 18,
-        marginBottom: 8,
+        marginBottom: 10,
     },
     pedidoButton: {
-        backgroundColor: 'orange',
+        backgroundColor: '#28a745',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
-        marginTop: 10,
     },
     pedidoButtonText: {
-        fontSize: 18,
         color: '#fff',
+        fontSize: 18,
         fontWeight: 'bold',
     },
     limpiarButton: {
-        backgroundColor: 'red',
+        backgroundColor: '#dc3545',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 10,
     },
     limpiarButtonText: {
-        fontSize: 18,
         color: '#fff',
+        fontSize: 18,
         fontWeight: 'bold',
     },
 });

@@ -6,4 +6,4 @@
 //export const IP = 'http://10.10.2.144';
 
 //IP de Casa Josue
-export const IP = 'http://10.10.2.143';
+export const IP = 'http://192.168.0.12';
