@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, Image, Alert, TouchableOpacity, Refre
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons';
 import { procesarPedido } from '../../../api/procesarPedido';
-import * as Constantes from '../../../src/utils/constantes'; // Importar constantes para la IP
+import * as Constantes from '../../../src/utils/constantes'; // Importar constantes para la Ipp
 
 const Carrito = ({ navigation }) => {
     const [carritoItems, setCarritoItems] = useState([]);
