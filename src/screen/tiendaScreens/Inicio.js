@@ -160,61 +160,27 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10,
-    },
-    card: {
-        flex: 1,
-        margin: 10,
-        backgroundColor: '#FFF',
-        padding: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
-        elevation: 3,
-        alignItems: 'center',
-    }, cardButton: {
-        flex: 1,
-    },
-    imagen: {
-        width: 100,
-        height: 100,
-        marginBottom: 10,
-    },
-    nombre: {
-        color: '#333',
-        fontWeight: '800',
-        fontSize: 13,
-        marginBottom: 5,
-        textAlign: 'center',
-    },
-    categoria: {
-        color: '#666',
-        fontSize: 14,
-        marginBottom: 5,
-        textAlign: 'center',
-    },
-    precio: {
-        color: '#F5853F',
-        fontWeight: '600',
-        fontSize: 16,
-        textAlign: 'right',
-        flex: 1,
     },
     title: {
-        fontSize: 26,
-        marginTop: 80,
-        textAlign: 'left',
-        fontWeight: '800',
         color: '#F5853F',
+        fontWeight: '800',
+        fontSize: 30,
+        marginBottom: 20,
     },
-    row: {
+    greeting: {
+        fontSize: 20,
+        marginBottom: 20,
+    },
+    dateTime: {
+        fontSize: 18,
+        marginBottom: 20,
+    },
+    infoContainer: {
+        marginBottom: 30,
+    },
+    infoItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-    icono: {
-        padding: 10,
+        alignItems: 'center',
+        marginBottom: 10,
     },
 });

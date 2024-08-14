@@ -14,8 +14,14 @@
     "ios": {
       "supportsTablet": true
     },
+
+    "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        
     "android": {
       "adaptiveIcon": {
+        "usesCleartextTraffic": true,
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }

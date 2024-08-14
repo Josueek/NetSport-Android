@@ -5,7 +5,7 @@ import BackgroundImage from '../../components/BackgroundImage';
 import InputText from '../../components/inputs/InputText';
 import InputLarge from '../../components/inputs/InputLarge';
 import Buttons from '../../components/buttons/Buttons';
-// Librería para los datos del usuario
+// Librería para los datos del usuarioo
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // API
 import { PerfilClient, EditarClient } from '../../../api/login';

@@ -1,19 +1,16 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from '../screen/SplashScreen';
-//Pantalla con el carousel
 import BienvenidaScreen from '../screen/BienvenidaScreen';
-//import LoginScreen from '../screen/Login';
 import RegistroScreen from '../screen/RegistroScreen';
 import LoginScreen from '../screen/Login';
-//tabNavegation
+import Pedidos from '../screen/tiendaScreens/Pedidos'; // Importa la pantalla de pedidos
+
 import TabNavigator from './TabNavigator';
 //Detalles del producto
 import DetalleProducto from '../screen/tiendaScreens/DetalleProducto';
 const Stack = createStackNavigator();
 
-//La idea es que primero se ejecute el splash 
-//Posterior a eso ejecuta las pantallas que contienen el carousel como primer uso
 const NavStack = () => {
     return (
         <Stack.Navigator initialRouteName="Splash">
@@ -48,6 +45,11 @@ const NavStack = () => {
                 options={{ headerShown: false }}
             />
 
+            <Stack.Screen
+                name="Pedidos"
+                component={Pedidos}
+                options={{ title: 'Mis Pedidos' }} // Añade la pantalla de pedidos
+            />
         </Stack.Navigator>
     );
 };
