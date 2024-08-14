@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Alert } from 'react-native';
 // Componentes
 import BackgroundImage from '../../components/BackgroundImage';
 // Librería de iconos
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import { useNavigation } from '@react-navigation/native';
 // Libreria para almacenar los productos marcados como favoritos
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 // API para capturar los datos de productos
 import { cargarProductos } from '../../../api/producto';
+//Cargamos el nombre del usuario
+import { PerfilClient } from '../../../api/login';
 //IP constantes
 import * as Constantes from '../../utils/constantes';
 
@@ -17,12 +18,18 @@ import * as Constantes from '../../utils/constantes';
 export default function Inicio() {
     //IP
     const ip = Constantes.IP;
+    //Navegabilidad
+    const navigation = useNavigation();
+    //Nombre del cliente
+    const [nombre, setNombre] = useState('');
+    const [apellido, setApellido] = useState('');
     //Productos
     const [productos, setProductos] = useState([]);
     // Productos favoritos
     const [favoritos, setFavoritos] = useState({});
     const [refreshing, setRefreshing] = useState(false);
 
+    //Cargamos los datos del producto
     const fetchProductos = useCallback(async () => {
         const result = await cargarProductos();
         if (result.products) {
@@ -37,9 +44,33 @@ export default function Inicio() {
         }
     }, []);
 
+    /**
+     * Cargamos los datos del cliennte y lo mostramos con mensaje de alerta
+     * 
+     */
+    const fetchNombreUsuario = useCallback(async () => {
+        try {
+            const userId = await AsyncStorage.getItem('user_id');
+            if (userId) {
+                const response = await PerfilClient({ user_id: userId });
+                if (response.user_data) {
+                    setNombre(response.user_data.nombre_cliente);
+                    setApellido(response.user_data.apellido_cliente);
+                    Alert.alert('Bienvenido', `Hola, ${response.user_data.nombre_cliente} ${response.user_data.apellido_cliente}!`);
+                } else {
+                    console.error('Error: No se pudieron cargar los datos del usuario.');
+                }
+            } else {
+                console.error('Error: No se pudo obtener el ID del usuario.');
+            }
+        } catch (error) {
+            console.error('Error al recuperar el nombre del usuario:', error);
+        }
+    }, []);
+
     useEffect(() => {
         fetchProductos();
-
+        fetchNombreUsuario();
         const intervalId = setInterval(() => {
             fetchProductos();
         }, 60000); // Actualiza los datos cada 60 segundos
@@ -72,12 +103,24 @@ export default function Inicio() {
     };
 
     //Cargar los detalles del producto acorde al producto seleccionado
+    const handleProductPress = (id_producto) => {
+        try {
+            navigation.navigate('DetalleProducto', { id_producto });
+        } catch (error) {
+            console.log('Error al recibir el producto:', error);
+        }
 
+    };
 
+    /**
+       * Renderizamos la carta mandando los parametros de los productos
+       * Cuando se preciona se manda el id_producto a la otra ventana DetallesProducto para
+       * mostrar los detalles del producto y añadir al carrito
+       */
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.cardButton}>
+        <TouchableOpacity style={styles.cardButton} onPress={() => handleProductPress(item.id_producto)}>
             <View style={styles.card}>
-                <Image source={{ uri: `${ip}//NetSports/Api/images/productos` + item.imagen_portada }} style={styles.imagen} />
+                <Image source={{ uri: `${ip}/NetSports/Api/images/productos${item.imagen_portada}` }} style={styles.imagen} />
                 <Text style={styles.nombre}>{item.nombre_producto}</Text>
                 <Text style={styles.categoria}>{item.nombre_categoria}</Text>
                 <View style={styles.row}>
@@ -97,7 +140,7 @@ export default function Inicio() {
     return (
         <BackgroundImage background={"General"}>
             <View style={styles.container}>
-                <Text style={styles.title}>Promociones de la semana</Text>
+                <Text style={styles.title}>Productos disponibles</Text>
                 <FlatList
                     data={productos}
                     renderItem={renderItem}

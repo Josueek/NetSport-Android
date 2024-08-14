@@ -8,6 +8,8 @@ import RegistroScreen from '../screen/RegistroScreen';
 import LoginScreen from '../screen/Login';
 //tabNavegation
 import TabNavigator from './TabNavigator';
+//Detalles del producto
+import DetalleProducto from '../screen/tiendaScreens/DetalleProducto';
 const Stack = createStackNavigator();
 
 //La idea es que primero se ejecute el splash 
@@ -38,6 +40,11 @@ const NavStack = () => {
             <Stack.Screen
                 name="TabNavigator"
                 component={TabNavigator}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="DetalleProducto"
+                component={DetalleProducto}
                 options={{ headerShown: false }}
             />
 
