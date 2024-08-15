@@ -79,11 +79,6 @@ const PedidosScreen = () => {
             return;
         }
 
-        if (comentarioTexto.length > 3) {
-            Alert.alert('Error', 'Ya ha realizado el máximo de reseñas permitidas por pedido');
-            return;
-        }
-
         Alert.alert(
             'Confirmar',
             '¿Estás seguro que quieres agregar esta valoración?',
