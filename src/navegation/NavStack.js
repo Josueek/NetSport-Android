@@ -5,7 +5,6 @@ import BienvenidaScreen from '../screen/BienvenidaScreen';
 import RegistroScreen from '../screen/RegistroScreen';
 import LoginScreen from '../screen/Login';
 import Pedidos from '../screen/tiendaScreens/Pedidos'; // Importa la pantalla de pedidos
-import RecuperacionClave from '../screen/RecuperacionClave';
 
 import TabNavigator from './TabNavigator';
 //Detalles del producto
@@ -51,12 +50,6 @@ const NavStack = () => {
                 component={Pedidos}
                 options={{ title: 'Mis Pedidos' }} // Añade la pantalla de pedidos
             />
-            <Stack.Screen
-                name="RecuperacionClave"
-                component={RecuperacionClave}
-                options={{ headerShown: false }}
-            />
-
         </Stack.Navigator>
     );
 };

@@ -29,9 +29,6 @@ export default function Login() {
     const RegistroS = () => {
         navigation.navigate('RegistroScreen');
     };
-    const Recuperacion = () => {
-        navigation.navigate('RecuperacionClave');
-    };
     const IniciarSesion = async () => {
         console.log('Botón presionado');
         try {
@@ -93,7 +90,7 @@ export default function Login() {
                     contra={true}
                     valor={clave}
                     setTextChange={setClave} />
-                <TouchableOpacity onPress={Recuperacion}>
+                <TouchableOpacity>
                     <Text>¿Olvidaste tu contraseña?</Text>
                 </TouchableOpacity>
                 <View style={styles.button}>

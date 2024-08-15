@@ -61,18 +61,14 @@ const DetalleProducto = ({ route }) => {
             const carrito = await AsyncStorage.getItem('carrito');
             const carritoItems = carrito ? JSON.parse(carrito) : [];
     
-            // Recuperar el userId
-            const userId = await AsyncStorage.getItem('user_id');
-    
             const nuevoItem = {
-                id_producto: producto.id_producto, // Cambiar 'id' a 'id_producto'
+                id: producto.id_producto,
                 nombre: producto.nombre_producto,
                 precio: producto.precio_final,
                 cantidad: cantidadSeleccionada,
                 color: colorSeleccionado,
                 talla: tallaSeleccionada,
-                imagen: `${Constantes.IP}//NetSports/Api/images/productos${producto.imagen_portada}`,
-                id_usuario: userId
+                imagen: `${Constantes.IP}//NetSports/Api/images/productos${producto.imagen_portada}` // Agregar la ruta de la imagen
             };
     
             carritoItems.push(nuevoItem);
@@ -87,7 +83,6 @@ const DetalleProducto = ({ route }) => {
             Alert.alert('Error', 'No se pudo agregar el producto al carrito.');
         }
     };
-    
     
 
     if (loading) {
