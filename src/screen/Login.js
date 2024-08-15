@@ -26,7 +26,9 @@ export default function Login() {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     };
-
+    const RegistroS = () => {
+        navigation.navigate('RegistroScreen');
+    };
     const IniciarSesion = async () => {
         console.log('Botón presionado');
         try {
@@ -70,6 +72,7 @@ export default function Login() {
             console.error('Error inicio de sesión:', error);
             Alert.alert('Error', 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
         }
+       
     };
 
 
@@ -96,6 +99,9 @@ export default function Login() {
                         accionBoton={IniciarSesion}
                     />
                 </View>
+                <TouchableOpacity onPress={RegistroS}> 
+                    <Text>¿Aún no tienes cuenta? Registrate</Text>
+                </TouchableOpacity>
             </View>
         </BackgroundImage>
     );
@@ -115,5 +121,6 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 30,
+        marginBottom: 15
     }
 });

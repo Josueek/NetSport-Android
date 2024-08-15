@@ -99,7 +99,7 @@ export default function Favoritos() {
                     renderItem={renderItem}
                     keyExtractor={item => item.id_producto.toString()}
                     numColumns={2} // Configura FlatList para que tenga dos columnas
-                    columnWrapperStyle={styles.row} // Asegura que las columnas tengan espacio entre ellas
+                    columnWrapperStyle={styles.row} // Asegura que las columnas tengan espacio entre ellass
                     refreshing={refreshing}
                     onRefresh={onRefresh}
                />

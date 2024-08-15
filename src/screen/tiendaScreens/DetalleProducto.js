@@ -12,7 +12,7 @@ const DetalleProducto = ({ route }) => {
     const [loading, setLoading] = useState(true);
     const [tallaSeleccionada, setTallaSeleccionada] = useState('');
     const [colorSeleccionado, setColorSeleccionado] = useState('');
-    const [cantidad, setCantidad] = useState('1'); // Cambiado a string para manejar el TextInput
+    const [cantidad, setCantidad] = useState('1'); // Cambiado a string para manejar el  TextInput
     const [valoraciones, setValoraciones] = useState([]);
     const [error, setError] = useState('');
 

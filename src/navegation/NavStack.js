@@ -7,8 +7,8 @@ import LoginScreen from '../screen/Login';
 import Pedidos from '../screen/tiendaScreens/Pedidos'; // Importa la pantalla de pedidos
 
 import TabNavigator from './TabNavigator';
+//Detalles del producto
 import DetalleProducto from '../screen/tiendaScreens/DetalleProducto';
-
 const Stack = createStackNavigator();
 
 const NavStack = () => {
@@ -42,7 +42,7 @@ const NavStack = () => {
             <Stack.Screen
                 name="DetalleProducto"
                 component={DetalleProducto}
-                options={{ title: 'Detalle del Producto' }}
+                options={{ headerShown: false }}
             />
 
             <Stack.Screen

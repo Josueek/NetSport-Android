@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, TextInput, StyleSheet, RefreshControl } from 'react-native';
 import { obtenerPedidos } from '../../../api/obtenerPedido';
-import { agregarValoracion } from '../../../api/agregarValoracion'; // Asegúrate de que esta importación sea correcta
+import { agregarValoracion } from '../../../api/agregarValoracion'; // Asegúrate de que esta importación sea correctas
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Constantes from '../../utils/constantes';
 
