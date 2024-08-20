@@ -65,7 +65,7 @@ export default function RecuperacionClave() {
             Alert.alert("Error", "Por favor ingresa una nueva contraseña.");
             return;
         }
-
+        //Direccion de la API para realizar la consulta y cambiar la clave
         const url = `${ip}/NetSports/Api/services/public/recuperacion_clave.php?correo_cliente=${email}&contrasena=${newPassword}`;
 
         fetch(url, {
