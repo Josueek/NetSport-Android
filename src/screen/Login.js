@@ -93,9 +93,9 @@ export default function Login() {
                     contra={true}
                     valor={clave}
                     setTextChange={setClave} />
-                <TouchableOpacity onPress={Recuperacion}>
-                    <Text>¿Olvidaste tu contraseña?</Text>
-                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('EnviarCorreo')}>
+                <Text style={{ color: 'orange' }}>¿Olvidaste tu contraseña?</Text>
+            </TouchableOpacity>
                 <View style={styles.button}>
                     <Buttons color={"Naranja"}
                         textoBoton={"Iniciar sesión"}
