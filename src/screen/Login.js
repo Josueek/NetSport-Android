@@ -102,9 +102,7 @@ export default function Login() {
                         accionBoton={IniciarSesion}
                     />
                 </View>
-                <TouchableOpacity onPress={RegistroS}> 
-                    <Text>¿Aún no tienes cuenta? Registrate</Text>
-                </TouchableOpacity>
+    
             </View>
         </BackgroundImage>
     );

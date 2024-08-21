@@ -1,155 +1,78 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Alert } from 'react-native';
-// Componentes
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import BackgroundImage from '../../components/BackgroundImage';
-// Librería de iconos
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-// Libreria para almacenar los productos marcados como favoritos
+import Buttons from '../../components/buttons/Buttons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// API para capturar los datos de productos
-import { cargarProductos } from '../../../api/producto';
-//Cargamos el nombre del usuario
 import { PerfilClient } from '../../../api/login';
-//IP constantes
-import * as Constantes from '../../utils/constantes';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 
-
-export default function Inicio() {
-    //IP
-    const ip = Constantes.IP;
-    //Navegabilidad
-    const navigation = useNavigation();
-    //Nombre del cliente
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
-    //Productos
-    const [productos, setProductos] = useState([]);
-    // Productos favoritos
-    const [favoritos, setFavoritos] = useState({});
-    const [refreshing, setRefreshing] = useState(false);
-
-    //Cargamos los datos del producto
-    const fetchProductos = useCallback(async () => {
-        const result = await cargarProductos();
-        if (result.products) {
-            setProductos(result.products);
-            // Cargar favoritos desde la libreria de almacenamiento
-            const storedFavoritos = await AsyncStorage.getItem('favoritos');
-            if (storedFavoritos) {
-                setFavoritos(JSON.parse(storedFavoritos));
-            }
-        } else {
-            console.error(result.message);
-        }
-    }, []);
-
-    /**
-     * Cargamos los datos del cliennte y lo mostramos con mensaje de alerta
-     * 
-     */
-    const fetchNombreUsuario = useCallback(async () => {
-        try {
-            const userId = await AsyncStorage.getItem('user_id');
-            if (userId) {
-                const response = await PerfilClient({ user_id: userId });
-                if (response.user_data) {
-                    setNombre(response.user_data.nombre_cliente);
-                    setApellido(response.user_data.apellido_cliente);
-                    Alert.alert('Bienvenido', `Hola, ${response.user_data.nombre_cliente} ${response.user_data.apellido_cliente}!`);
-                } else {
-                    console.error('Error: No se pudieron cargar los datos del usuario.');
-                }
-            } else {
-                console.error('Error: No se pudo obtener el ID del usuario.');
-            }
-        } catch (error) {
-            console.error('Error al recuperar el nombre del usuario:', error);
-        }
-    }, []);
+export default function Inicio({ navigation }) {  // Recibe navigation como prop
+    const [userName, setUserName] = useState('');
+    const [currentDateTime, setCurrentDateTime] = useState('');
 
     useEffect(() => {
-        fetchProductos();
-        fetchNombreUsuario();
-        const intervalId = setInterval(() => {
-            fetchProductos();
-        }, 60000); // Actualiza los datos cada 60 segundos
-
-        return () => clearInterval(intervalId); // Limpiar el intervalo al desmontar el componente
-    }, [fetchProductos]);
-
-    const onRefresh = async () => {
-        setRefreshing(true);
-        await fetchProductos();
-        setRefreshing(false);
-    };
-
-    const toggleFavorito = async (id_producto) => {
-        const newFavoritos = {
-            ...favoritos,
-            [id_producto]: !favoritos[id_producto]
+        const fetchUserData = async () => {
+            try {
+                const user_id = await AsyncStorage.getItem('user_id');
+                if (user_id) {
+                    const response = await PerfilClient({ user_id });
+                    if (response.user_data && response.user_data.nombre_cliente) {
+                        setUserName(response.user_data.nombre_cliente);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar los datos del usuario:', error);
+            }
         };
-        setFavoritos(newFavoritos);
-        // Guardar favoritos en AsyncStorage
-        await AsyncStorage.setItem('favoritos', JSON.stringify(newFavoritos));
-        // Actualizar la lista de productos
-        setProductos(prevProductos =>
-            prevProductos.map(productos =>
-                productos.id_producto === id_producto
-                    ? { ...productos, favoritos: !favoritos[id_producto] }
-                    : productos
-            )
-        );
-    };
 
-    //Cargar los detalles del producto acorde al producto seleccionado
-    const handleProductPress = (id_producto) => {
-        try {
-            navigation.navigate('DetalleProducto', { id_producto });
-        } catch (error) {
-            console.log('Error al recibir el producto:', error);
-        }
+        fetchUserData();
 
-    };
+        const updateDateTime = () => {
+            const now = new Date();
+            const date = now.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            });
+            const time = now.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            });
+            setCurrentDateTime(`${date} ${time}`);
+        };
 
-    /**
-       * Renderizamos la carta mandando los parametros de los productos
-       * Cuando se preciona se manda el id_producto a la otra ventana DetallesProducto para
-       * mostrar los detalles del producto y añadir al carrito
-       */
-    const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.cardButton} onPress={() => handleProductPress(item.id_producto)}>
-            <View style={styles.card}>
-                <Image source={{ uri: `${ip}/NetSports/Api/images/productos${item.imagen_portada}` }} style={styles.imagen} />
-                <Text style={styles.nombre}>{item.nombre_producto}</Text>
-                <Text style={styles.categoria}>{item.nombre_categoria}</Text>
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.icono} onPress={() => toggleFavorito(item.id_producto)}>
-                        <Icon
-                            name={favoritos[item.id_producto] ? "heart" : "heart-outline"}
-                            size={25}
-                            color={favoritos[item.id_producto] ? "#d3dfdg" : "#000"}
-                        />
-                    </TouchableOpacity>
-                    <Text style={styles.precio}>${item.precio_final}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+        updateDateTime();
+        const intervalId = setInterval(updateDateTime, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     return (
         <BackgroundImage background={"General"}>
             <View style={styles.container}>
-                <Text style={styles.title}>Productos disponibles</Text>
-                <FlatList
-                    data={productos}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id_producto.toString()}
-                    numColumns={2} // Configura FlatList para que tenga dos columnas
-                    columnWrapperStyle={styles.row} // Asegura que las columnas tengan espacio entre ellas
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                />
+                <Text style={styles.title}>Inicio</Text>
+                <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+                <Text style={styles.dateTime}>{currentDateTime}</Text>
+                <View style={styles.infoContainer}>
+                    <View style={styles.infoItem}>
+                        <Icon name="truck" size={24} color="#000" />
+                        <Text>Entrega segura en 1 - 5 días hábiles</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Icon name="star" size={24} color="#000" />
+                        <Text>Reseñas de nuestros clientes</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Icon name="lock" size={24} color="#000" />
+                        <Text>Compras seguras</Text>
+                    </View>
+                </View>
+                <Buttons 
+                    color={"Naranja"} 
+                    textoBoton={"Ver Pedidos"} 
+                    accionBoton={() => navigation.navigate('Pedidos')}  // Usa navigation para navegar
+                    />
             </View>
         </BackgroundImage>
     );
