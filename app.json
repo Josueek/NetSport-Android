@@ -14,20 +14,24 @@
     "ios": {
       "supportsTablet": true
     },
-
     "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        },
-        
+      "NSAllowsArbitraryLoads": true
+    },
     "android": {
       "adaptiveIcon": {
         "usesCleartextTraffic": true,
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.netsport"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5ac055ae-da06-4115-b7ee-1c0c8dac1816"
+      }
     }
   }
 }

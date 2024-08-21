@@ -12,7 +12,7 @@ export const cargarProductos = async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-           
+
         });
         const jsonResponse = await response.json();
         return jsonResponse;
@@ -21,3 +21,25 @@ export const cargarProductos = async () => {
         return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };
     }
 };
+
+//API para jalar los detalles del producto acorde el ID
+export const DetallesProductos = async (id_producto) => {
+    const url = `${ip}/NetSports/Api/services/public/detalle_producto.php?id_producto=${id_producto}`;
+    try {
+        //Imprimimos la url
+        console.log('Mandando respuesta a:', url);
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const jsonResponse = await response.json();
+        //Imprimimos el valor devuelto
+        console.log('server response:', jsonResponse);
+        return jsonResponse;
+    } catch (error) {
+        console.error('Error during fetching products:', error);
+        return { success: false, message: 'Error de red. Por favor, inténtelo de nuevo.' };
+    }
+}
