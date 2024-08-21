@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Alert, TextInput } from 'react-native';
 import Buttons from '../components/buttons/Buttons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EditarClient } from '../../api/login'; // Importa la función para actualizar el perfil
+import { cambiarContrasena } from '../../api/cambiarContrasena'; // Importa la nueva función
 
 export default function CambiarContrasena({ navigation }) {
     const [newPassword, setNewPassword] = useState('');
@@ -30,12 +30,12 @@ export default function CambiarContrasena({ navigation }) {
 
             // Preparar los datos para actualizar la contraseña
             const dataClient = {
-                userId: userId,
-                newPassword: newPassword,
+                userId: userId,  // Asegúrate de que el nombre del campo sea correcto
+                newPassword: newPassword,  // Asegúrate de que el nombre del campo sea correcto
             };
 
             // Llamar a la API para actualizar la contraseña
-            const response = await EditarClient(dataClient);
+            const response = await cambiarContrasena(dataClient);
 
             if (response.success) {
                 Alert.alert("Éxito", "Contraseña actualizada correctamente.");
