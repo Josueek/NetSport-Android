@@ -191,7 +191,7 @@ export default function UserDetails() {
                             Valor={contrasenaNueva}
                             setTextChange={setContrasenaNueva}
                             contra={true}
-                            editable={true}
+                            editable={false}
                         />
                     </View>
                 </View>
